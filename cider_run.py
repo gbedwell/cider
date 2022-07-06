@@ -41,3 +41,4 @@ if args.write is False:
 else:
     with open(str(args.name) + "_cider_output.txt", 'w') as f:
         print(output, file=f)
+    f.close()
