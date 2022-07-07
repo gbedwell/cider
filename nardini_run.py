@@ -13,12 +13,21 @@ parser.add_argument("-fasta", "--fasta", action='store_true', help="Whether or n
 parser.add_argument("-plot", "--plot", action='store_true', help="Whether or not to generate a plot of the z-scores")
 args = parser.parse_args()
 
+print("Running NARDINI...")
+print("\n")
 if args.fasta is False:
     seqObj = SequenceParameters(str(args.seq))
     zscores = seqObj.calculate_zscore()
     keys = list(zscores.keys())
     for i in keys:
-        zmat = zscores[i][3]
+        arr = zscores[i][3]
+        zmat = np.matrix(arr)
+    if args.write is False:
+        print(zmat)
+    else:
+        with open(str(args.name) + "_nardini_output.txt", 'w') as f:
+            for line in zmat:
+                np.savetxt(f, line, fmt='%.5f')
 else:
     with open(str(args.seq)) as f:
         tmp = []
@@ -39,9 +48,17 @@ else:
             tmp.append(df)
         zmat = pd.concat(tmp, axis=1)
 
-if args.write is False:
-    print(zmat)
-else:
-    with open(str(args.name) + "_nardini_output.txt", 'w') as f:
-        print(zmat, file=f)
-    f.close()
+    if args.write is False:
+        print(zmat)
+    else:
+        with open(str(args.name) + "_nardini_output.txt", 'w') as f:
+            print(zmat, file=f)
+        f.close()
+
+if args.plot is True:
+    import subprocess
+    print("\n")
+    print("Plotting output...")
+    subprocess.call(['Rscript', 'nardini_plots_python.R', args.name])
+
+print("Done!")
