@@ -65,9 +65,9 @@ if(ncol(mat)==8 && nrow(mat)==8){
   mat <- as.matrix(data.table::fread(latest.file, header=TRUE))
   rownames(mat) <- seq(1,nrow(mat))
 
-  if(any(stringr::str_length(unique(colnames(mat))) > 5)){
+  if(any(stringr::str_length(unique(colnames(mat))) > 7)){
     warning("Trucating sequence names. The length of each sequence name should be <= 5 characters.")
-    colnames(mat) <- stringr::str_sub(colnames(mat), 1, 5)
+    colnames(mat) <- stringr::str_sub(colnames(mat), 1, 7)
     }
 
   df <- mat %>%
