@@ -3,6 +3,7 @@
 import argparse
 from Bio import SeqIO
 import numpy as np
+import pandas as pd
 from localcider.sequenceParameters import SequenceParameters
 
 parser = argparse.ArgumentParser(description= "")
@@ -11,13 +12,16 @@ parser.add_argument("-name", "--name", help="Sequence name")
 parser.add_argument("-write", "--write", action='store_true', help="Whether or not to write output to file")
 parser.add_argument("-fasta", "--fasta", action='store_true', help="Whether or not input is a fasta file")
 parser.add_argument("-plot", "--plot", action='store_true', help="Whether or not to generate a plot of the z-scores")
+parser.add_argument("-iter", "--iter", default=100000, help="The number of random iterations to generate")
+parser.add_argument("-seed", "--seed", default=None, help="The random seed for randomization")
 args = parser.parse_args()
 
 print("Running NARDINI...")
 print("\n")
+
 if args.fasta is False:
     seqObj = SequenceParameters(str(args.seq))
-    zscores = seqObj.calculate_zscore()
+    zscores = seqObj.calculate_zscore(num_scrambles=int(args.iter), random_seed=args.seed)
     keys = list(zscores.keys())
     for i in keys:
         arr = zscores[i][3]
@@ -35,7 +39,7 @@ else:
             sequence = str(record.seq)
             seq_id = str(record.id)
             seqObj = SequenceParameters(sequence)
-            zscores = seqObj.calculate_zscore()
+            zscores = seqObj.calculate_zscore(num_scrambles=int(args.iter), random_seed=args.seed)
             keys = list(zscores.keys())
             for i in keys:
                 arr = zscores[i][3]
@@ -51,14 +55,17 @@ else:
     if args.write is False:
         print(zmat)
     else:
-        with open(str(args.name) + "_nardini_output.txt", 'w') as f:
-            print(zmat, file=f)
-        f.close()
+        if args.fasta is False:
+            with open(str(args.name) + "_nardini_output.txt", 'w') as f:
+                print(zmat, file=f)
+            f.close()
+        else:
+            zmat.to_csv(str(args.name) + "_nardini_output.txt", index=False, sep="\t")
 
 if args.plot is True:
     import subprocess
     print("\n")
     print("Plotting output...")
-    subprocess.call(['Rscript', 'nardini_plots_python.R', args.name])
+    subprocess.call(['Rscript', 'nardini_plots.R', args.name])
 
 print("Done!")
