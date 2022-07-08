@@ -137,8 +137,7 @@ if(ncol(mat)==8 && nrow(mat)==8){
                                                     barwidth = 25,
                                                     barheight = 1,
                                                     title.position = "left",
-                                                    title.vjust = 0.95,
-                                                    )) +
+                                                    title.vjust = 0.95)) +
         theme_bw() +
         theme(panel.border = element_rect(colour="black", size=1),
               axis.title = element_blank(),
