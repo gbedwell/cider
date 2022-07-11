@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 
+import sys
 import argparse
 from Bio import SeqIO
 import numpy as np
@@ -63,9 +64,12 @@ else:
             zmat.to_csv(str(args.name) + "_nardini_output.txt", index=False, sep="\t")
 
 if args.plot is True:
-    import subprocess
-    print("\n")
-    print("Plotting output...")
-    subprocess.call(['Rscript', 'nardini_plots.R', args.name])
+    if args.write is False:
+        sys.exit("To plot the output, the results must first be written out. Use the -write argument to write the NARDINI output to a file.")
+    else:
+        import subprocess
+        print("\n")
+        print("Plotting output...")
+        subprocess.call(['Rscript', 'nardini_plots.R', args.name])
 
 print("Done!")
